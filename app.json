@@ -19,7 +19,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.ilhamprima.firebase"
     },
     "web": {
       "bundler": "metro",
@@ -31,6 +32,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "0f8c578b-2803-4864-85e2-9e4e621823a0"
+      }
     }
   }
 }

@@ -12,18 +12,24 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: "#18192b",
+          borderBottomWidth: 2, // Add border bottom width
+          borderBottomColor: '#CCCCCC', // Add border bottom color (light grey)
+        },
+        headerTintColor: "#fff",
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: 'Fire Monitoring',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+            <TabBarIcon name={focused ? 'pulse' : 'pulse-outline'} color={color} />
           ),
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="explore"
         options={{
           title: 'Explore',
@@ -31,7 +37,7 @@ export default function TabLayout() {
             <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
           ),
         }}
-      />
+      /> */}
     </Tabs>
   );
 }
