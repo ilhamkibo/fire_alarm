@@ -27,18 +27,19 @@ Notifications.setNotificationHandler({
 const HomeScreen = () => {
   const [expoPushToken, setExpoPushToken] = useState("");
   const [channels, setChannels] = useState([]);
+  const [isConnected, setIsConnected] = useState("Not Connected");
   const [notification, setNotification] = useState(undefined);
   const notificationListener = useRef();
   const responseListener = useRef();
 
   const [data, setData] = useState({
-    asapValue: 30,
-    suhuValue: 10,
-    apiValue: 30,
-    asap: "Normal",
-    suhu: "Tipis",
-    output: "Normal",
-    api: "Lemah",
+    asapValue: 0,
+    suhuValue: 0,
+    apiValue: 0,
+    asap: "-",
+    suhu: "-",
+    output: "-",
+    api: "-",
   });
   const alertVisible = useRef(false);
   const clientRef = useRef(null);
@@ -157,6 +158,7 @@ const HomeScreen = () => {
       clientRef.current.onConnectionLost = (responseObject) => {
         if (responseObject.errorCode !== 0) {
           console.log("Connection lost:", responseObject.errorMessage);
+          setIsConnected(`Connection lost: ${responseObject.errorMessage}`); // Update connection status
           if (reconnectTimeout.current) {
             clearTimeout(reconnectTimeout.current);
           }
@@ -168,7 +170,10 @@ const HomeScreen = () => {
         const apiString = getFuzzyFire(Number(payload.api));
         const asapString = getFuzzyAsap(Number(payload.asap));
         const suhuString = getFuzzySuhu(Number(payload.suhu));
-        if (payload.status == "Siaga" || payload.status == "Bahaya") {
+        if (
+          payload.status.toLowerCase() == "siaga" ||
+          payload.status.toLowerCase() == "bahaya"
+        ) {
           createTwoButtonAlert(
             `${payload.status}!`,
             `Api = ${apiString}, Suhu = ${asapString}, Asap = ${suhuString}`
@@ -199,10 +204,12 @@ const HomeScreen = () => {
     clientRef.current.connect({
       onSuccess: () => {
         console.log("Connected");
+        setIsConnected("Connected"); // Update connection status
         clientRef.current.subscribe("fire-alarm");
       },
       onFailure: (err) => {
         console.log("Connection failed:", err);
+        setIsConnected(`Connection failed: ${err.errorMessage}`); // Update connection status with the error message
         if (reconnectTimeout.current) {
           clearTimeout(reconnectTimeout.current);
         }
@@ -257,6 +264,25 @@ const HomeScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <TimeContainer />
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignContent: "center",
+          flexDirection: "row",
+          marginHorizontal: 10,
+        }}
+      >
+        <View
+          style={[
+            styles.dot,
+            isConnected == "Connected" ? styles.greenDot : styles.redDot,
+          ]}
+        />
+        <Text style={{ color: "#616177", textAlign: "center" }}>
+          MQTT Status: {isConnected}
+        </Text>
+      </View>
       <View style={styles.cardContainer}>
         <View style={styles.cardRow}>
           <View style={styles.card}>
@@ -314,6 +340,19 @@ const HomeScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  dot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginRight: 10,
+    marginTop: 5,
+  },
+  greenDot: {
+    backgroundColor: "green",
+  },
+  redDot: {
+    backgroundColor: "red",
+  },
   wleo: {
     flex: 1,
     marginTop: 10,
